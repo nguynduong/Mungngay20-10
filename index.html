@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10 🌹</title>
-  <meta name="description" content="Trang web chúc mừng ngày Phụ nữ Việt Nam 20/10 với những bông hoa hồng rực rỡ và món quà bất ngờ.">
+  <meta name="description"
+    content="Trang web chúc mừng ngày Phụ nữ Việt Nam 20/10 với những bông hoa hồng rực rỡ và món quà bất ngờ.">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <!-- Ambient Canvas for Background Sparkles & Floating Hearts -->
@@ -31,7 +36,8 @@
   </button>
 
   <!-- Hidden YouTube Player Container -->
-  <div id="yt-player-container" style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+  <div id="yt-player-container"
+    style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
     <div id="yt-player"></div>
   </div>
 
@@ -49,7 +55,7 @@
         </div>
         <h1 class="passcode-title">20 • 10 • SPECIAL</h1>
         <p class="passcode-subtitle">Vui lòng nhập mật mã bí mật (6 chữ số) để mở quà</p>
-        
+
         <!-- 6 PIN Input Display Boxes -->
         <div class="pin-display-wrapper" id="pin-boxes" tabindex="0" role="button" aria-label="Nhập 6 số mật mã">
           <div class="pin-box active" data-index="0"></div>
@@ -61,7 +67,8 @@
         </div>
 
         <!-- Hidden Native Input for Mobile / Physical Keyboard Input -->
-        <input type="tel" id="hidden-pin-input" maxlength="6" autocomplete="off" inputmode="numeric" pattern="[0-9]*" aria-hidden="true">
+        <input type="tel" id="hidden-pin-input" maxlength="6" autocomplete="off" inputmode="numeric" pattern="[0-9]*"
+          aria-hidden="true">
 
         <!-- Error Feedback Message -->
         <p id="passcode-error" class="passcode-error"></p>
@@ -124,27 +131,41 @@
 
               <!-- Cành và Lá -->
               <g class="rose-stem-leaves">
-                <path d="M100 130 Q100 180 102 195" stroke="#2d6a4f" stroke-width="5" stroke-linecap="round" fill="none" />
+                <path d="M100 130 Q100 180 102 195" stroke="#2d6a4f" stroke-width="5" stroke-linecap="round"
+                  fill="none" />
                 <!-- Lá trái -->
-                <path class="leaf leaf-left" d="M98 150 C75 145 65 130 60 145 C70 160 88 156 98 150 Z" fill="url(#leafGrad)" />
+                <path class="leaf leaf-left" d="M98 150 C75 145 65 130 60 145 C70 160 88 156 98 150 Z"
+                  fill="url(#leafGrad)" />
                 <!-- Lá phải -->
-                <path class="leaf leaf-right" d="M102 165 C125 160 135 145 140 160 C130 175 112 171 102 165 Z" fill="url(#leafGrad)" />
+                <path class="leaf leaf-right" d="M102 165 C125 160 135 145 140 160 C130 175 112 171 102 165 Z"
+                  fill="url(#leafGrad)" />
               </g>
 
               <!-- Các lớp cánh hoa hồng nở từ ngoài vào trong -->
               <g class="rose-petals-group" filter="url(#glowFilter)">
                 <!-- Lớp cánh ngoài cùng -->
-                <path class="petal petal-outer-1" d="M100 45 C60 45 40 85 60 120 C80 135 120 135 140 120 C160 85 140 45 100 45 Z" fill="url(#roseGrad1)" />
-                <path class="petal petal-outer-2" d="M60 80 C40 100 50 130 85 130 C120 130 130 100 110 80 Z" fill="url(#roseGrad2)" />
-                <path class="petal petal-outer-3" d="M140 80 C160 100 150 130 115 130 C80 130 70 100 90 80 Z" fill="url(#roseGrad1)" />
+                <path class="petal petal-outer-1"
+                  d="M100 45 C60 45 40 85 60 120 C80 135 120 135 140 120 C160 85 140 45 100 45 Z"
+                  fill="url(#roseGrad1)" />
+                <path class="petal petal-outer-2" d="M60 80 C40 100 50 130 85 130 C120 130 130 100 110 80 Z"
+                  fill="url(#roseGrad2)" />
+                <path class="petal petal-outer-3" d="M140 80 C160 100 150 130 115 130 C80 130 70 100 90 80 Z"
+                  fill="url(#roseGrad1)" />
 
                 <!-- Lớp cánh giữa -->
-                <path class="petal petal-mid-1" d="M75 65 C60 85 70 115 100 115 C130 115 140 85 125 65 C100 50 85 55 75 65 Z" fill="url(#roseGrad2)" />
-                <path class="petal petal-mid-2" d="M125 70 C140 90 125 110 100 110 C75 110 60 90 75 70 C90 55 110 55 125 70 Z" fill="url(#roseGrad1)" />
+                <path class="petal petal-mid-1"
+                  d="M75 65 C60 85 70 115 100 115 C130 115 140 85 125 65 C100 50 85 55 75 65 Z"
+                  fill="url(#roseGrad2)" />
+                <path class="petal petal-mid-2"
+                  d="M125 70 C140 90 125 110 100 110 C75 110 60 90 75 70 C90 55 110 55 125 70 Z"
+                  fill="url(#roseGrad1)" />
 
                 <!-- Lớp cánh nhụy bên trong -->
-                <path class="petal petal-inner-1" d="M85 80 C75 95 85 105 100 105 C115 105 125 95 115 80 C105 70 95 70 85 80 Z" fill="url(#roseGrad2)" />
-                <path class="petal petal-inner-core" d="M93 85 C88 92 92 98 100 98 C108 98 112 92 107 85 C103 80 97 80 93 85 Z" fill="#ff758f" />
+                <path class="petal petal-inner-1"
+                  d="M85 80 C75 95 85 105 100 105 C115 105 125 95 115 80 C105 70 95 70 85 80 Z"
+                  fill="url(#roseGrad2)" />
+                <path class="petal petal-inner-core"
+                  d="M93 85 C88 92 92 98 100 98 C108 98 112 92 107 85 C103 80 97 80 93 85 Z" fill="#ff758f" />
               </g>
             </svg>
           </div>
@@ -154,7 +175,7 @@
         <div class="rose-greeting-card glass-panel">
           <div class="greeting-badge" id="greeting-badge">Happy Vietnamese Women's Day • 20/10</div>
           <h2 class="greeting-title" id="rose-greeting-title">Chúc Mừng Ngày 20/10 🌹</h2>
-          
+
           <div class="greeting-divider">
             <span class="divider-line"></span>
             <i class="fa-solid fa-heart divider-heart"></i>
@@ -168,9 +189,8 @@
           <!-- Câu nói và Nút bấm mở quà đặc biệt -->
           <div class="gift-prompt-box">
             <p class="gift-prompt-text">
-              <span id="prompt-prefix">Có 1 món quà đặc biệt tặng người</span>
+              <span id="prompt-prefix">Có 1 món quà đặc biệt tặng </span>
               <span id="recipient-name" class="highlight-name">...</span>
-              <span id="prompt-suffix">...</span>
             </p>
             <button id="btn-next-to-rain" class="glow-btn" type="button">
               <span>Mở quà ngay</span>
@@ -199,13 +219,13 @@
       <div class="secret-question-box glass-panel">
         <div class="secret-icon"><i class="fa-solid fa-envelope-open-text"></i></div>
         <h3 id="secret-question-text" class="secret-title">Có 1 món quà bí mật có muốn nhận không? 🎁</h3>
-        
+
         <div class="question-actions">
           <button id="btn-gift-no" class="action-btn btn-no" type="button">
             <i class="fa-regular fa-face-smile"></i>
             <span id="btn-no-text">Không 🙈</span>
           </button>
-          
+
           <button id="btn-gift-yes" class="action-btn btn-yes glow-btn" type="button">
             <i class="fa-solid fa-heart-circle-check"></i>
             <span id="btn-yes-text">Có! Nhận ngay ✨</span>
@@ -221,7 +241,7 @@
     <!-- ========================================================================= -->
     <section id="scene-heart" class="scene">
       <div class="heart-scene-container">
-        
+
         <div class="heart-header">
           <span class="heart-sub">Dành tặng cho bạn</span>
           <h2 class="heart-title">Trái Tim Kỷ Niệm 💖</h2>
@@ -245,7 +265,7 @@
           <div class="letter-stamp">
             <i class="fa-solid fa-ribbon"></i>
           </div>
-          
+
           <div class="letter-body" id="final-letter-lines">
             <!-- Các dòng chữ được load từ CONFIG.finalLetter -->
           </div>
@@ -291,4 +311,5 @@
   <script src="config.js"></script>
   <script src="script.js"></script>
 </body>
+
 </html>
