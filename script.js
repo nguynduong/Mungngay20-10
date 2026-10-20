@@ -51,7 +51,49 @@ document.addEventListener("DOMContentLoaded", () => {
     return match ? match[1] : (cleanUrl.length === 11 ? cleanUrl : null);
   }
 
-  const ytVideoId = extractYouTubeId(CONFIG.youtubeUrl);
+  // =========================================================================
+  // 👥 HỆ THỐNG ĐA NGƯỜI NHẬN & ĐA THƯ MỤC ẢNH
+  // =========================================================================
+  let activeProfile = null;
+
+  function resolveInitialProfile() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const userParam = urlParams.get("user") || urlParams.get("person");
+
+    if (CONFIG.recipients) {
+      if (userParam && CONFIG.recipients[userParam]) {
+        return CONFIG.recipients[userParam];
+      }
+      if (CONFIG.defaultRecipient && CONFIG.recipients[CONFIG.defaultRecipient]) {
+        return CONFIG.recipients[CONFIG.defaultRecipient];
+      }
+      const firstKey = Object.keys(CONFIG.recipients)[0];
+      if (firstKey) return CONFIG.recipients[firstKey];
+    }
+
+    return {
+      passcode: CONFIG.passcode || "051104",
+      recipientName: CONFIG.recipientName || "Bạn",
+      roseGreeting: CONFIG.roseGreeting || {},
+      finalLetter: CONFIG.finalLetter || [],
+      pictures: CONFIG.pictures || [],
+      youtubeUrl: CONFIG.youtubeUrl || ""
+    };
+  }
+
+  activeProfile = resolveInitialProfile();
+
+  function getActivePictures() {
+    if (activeProfile && activeProfile.pictures && activeProfile.pictures.length > 0) {
+      return activeProfile.pictures;
+    }
+    if (CONFIG.recipients && CONFIG.recipients["Trang"] && CONFIG.recipients["Trang"].pictures) {
+      return CONFIG.recipients["Trang"].pictures;
+    }
+    return CONFIG.pictures || [];
+  }
+
+  const ytVideoId = extractYouTubeId(activeProfile.youtubeUrl || CONFIG.youtubeUrl);
   let ytPlayer = null;
   let isYTReady = false;
 
@@ -397,14 +439,39 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function verifyPasscode() {
-    const expectedPasscode = CONFIG.passcode || "201024";
-    if (currentPasscode === expectedPasscode) {
+    let matchedProfile = null;
+
+    if (CONFIG.recipients) {
+      for (const [key, profile] of Object.entries(CONFIG.recipients)) {
+        if (profile.passcode === currentPasscode) {
+          matchedProfile = profile;
+          break;
+        }
+      }
+    }
+
+    if (!matchedProfile && CONFIG.passcode && currentPasscode === CONFIG.passcode) {
+      matchedProfile = activeProfile;
+    }
+
+    if (matchedProfile) {
+      activeProfile = matchedProfile;
       passcodeError.style.color = "#52b788";
-      passcodeError.textContent = "Mật khẩu chính xác! Đang mở quà... 🌹";
+      passcodeError.textContent = `Mật khẩu chính xác! Đang mở quà cho ${activeProfile.recipientName || ''}... 🌹`;
       playGentleChime(659.25, 0.4);
       setTimeout(() => playGentleChime(783.99, 0.5), 150);
 
-      // 🎵 PHÁT NHẠC NGAY KHI VỪA XÁC NHẬN MẬT KHẨU (Tận dụng gesture tương tác của người dùng)
+      // Cập nhật nhạc YouTube nếu người nhận có nhạc riêng
+      if (activeProfile.youtubeUrl && ytPlayer && isYTReady) {
+        const targetVid = extractYouTubeId(activeProfile.youtubeUrl);
+        if (targetVid) {
+          try {
+            ytPlayer.loadVideoById(targetVid);
+          } catch (e) { }
+        }
+      }
+
+      // 🎵 PHÁT NHẠC NGAY KHI VỪA XÁC NHẬN MẬT KHẨU
       playMusic();
 
       setTimeout(() => {
@@ -478,20 +545,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const recipientNameEl = document.getElementById("recipient-name");
     const promptSuffixEl = document.getElementById("prompt-suffix");
 
-    if (CONFIG.roseGreeting) {
-      if (badgeEl && CONFIG.roseGreeting.badge) badgeEl.textContent = CONFIG.roseGreeting.badge;
-      if (titleEl && CONFIG.roseGreeting.title) titleEl.textContent = CONFIG.roseGreeting.title;
-      if (contentEl && CONFIG.roseGreeting.content) contentEl.textContent = CONFIG.roseGreeting.content;
-      if (promptPrefixEl && typeof CONFIG.roseGreeting.giftPromptPrefix === "string") {
-        promptPrefixEl.textContent = CONFIG.roseGreeting.giftPromptPrefix;
+    const roseGreeting = (activeProfile && activeProfile.roseGreeting) || CONFIG.roseGreeting;
+    if (roseGreeting) {
+      if (badgeEl && roseGreeting.badge) badgeEl.textContent = roseGreeting.badge;
+      if (titleEl && roseGreeting.title) titleEl.textContent = roseGreeting.title;
+      if (contentEl && roseGreeting.content) contentEl.textContent = roseGreeting.content;
+      if (promptPrefixEl && typeof roseGreeting.giftPromptPrefix === "string") {
+        promptPrefixEl.textContent = roseGreeting.giftPromptPrefix;
       }
-      if (promptSuffixEl && typeof CONFIG.roseGreeting.giftPromptSuffix === "string") {
-        promptSuffixEl.textContent = CONFIG.roseGreeting.giftPromptSuffix;
+      if (promptSuffixEl && typeof roseGreeting.giftPromptSuffix === "string") {
+        promptSuffixEl.textContent = roseGreeting.giftPromptSuffix;
       }
     }
 
-    if (recipientNameEl && CONFIG.recipientName) {
-      recipientNameEl.textContent = CONFIG.recipientName;
+    const recipientName = (activeProfile && activeProfile.recipientName) || CONFIG.recipientName;
+    if (recipientNameEl && recipientName) {
+      recipientNameEl.textContent = recipientName;
     }
 
     // Tạo cánh hoa hồng rơi
@@ -540,10 +609,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (CONFIG.btnNoText) btnNoText.textContent = CONFIG.btnNoText;
 
   function spawnRainPhoto() {
-    if (!isRainingActive || !CONFIG.pictures || CONFIG.pictures.length === 0) return;
+    const pictures = getActivePictures();
+    if (!isRainingActive || !pictures || pictures.length === 0) return;
 
     // Lấy ảnh ngẫu nhiên từ danh sách
-    const randomImgSrc = CONFIG.pictures[Math.floor(Math.random() * CONFIG.pictures.length)];
+    const randomImgSrc = pictures[Math.floor(Math.random() * pictures.length)];
 
     const card = document.createElement("div");
     card.className = "rain-photo-card";
@@ -667,9 +737,10 @@ document.addEventListener("DOMContentLoaded", () => {
     heartContainer.innerHTML = "";
     letterBody.innerHTML = "";
 
-    // Nạp các dòng chữ từ CONFIG.finalLetter
-    if (CONFIG.finalLetter && Array.isArray(CONFIG.finalLetter)) {
-      CONFIG.finalLetter.forEach((line) => {
+    // Nạp các dòng chữ từ activeProfile hoặc CONFIG
+    const finalLetter = (activeProfile && activeProfile.finalLetter) || CONFIG.finalLetter || [];
+    if (Array.isArray(finalLetter)) {
+      finalLetter.forEach((line) => {
         const p = document.createElement("p");
         p.className = "letter-line";
         p.textContent = line;
@@ -680,7 +751,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Tính toán tọa độ toán học hình trái tim:
     // x = 16 * sin^3(t)
     // y = -(13 * cos(t) - 5 * cos(2t) - 2 * cos(3t) - cos(4t))
-    const pictures = CONFIG.pictures || [];
+    const pictures = getActivePictures();
     const count = pictures.length;
     if (count === 0) return;
 
