@@ -84,13 +84,18 @@ document.addEventListener("DOMContentLoaded", () => {
   activeProfile = resolveInitialProfile();
 
   function getActivePictures() {
-    if (activeProfile && activeProfile.pictures && activeProfile.pictures.length > 0) {
+    if (activeProfile && Array.isArray(activeProfile.pictures)) {
       return activeProfile.pictures;
     }
-    if (CONFIG.recipients && CONFIG.recipients["Trang"] && CONFIG.recipients["Trang"].pictures) {
-      return CONFIG.recipients["Trang"].pictures;
-    }
-    return CONFIG.pictures || [];
+    return [];
+  }
+
+  function isRoseModeActive() {
+    if (!activeProfile) return false;
+    // Kiểm tra trực tiếp hasPictures: true/false như cấu hình người dùng
+    if (activeProfile.hasPictures === false) return true;
+    if (activeProfile.hasPictures === true) return false;
+    return !activeProfile.pictures || activeProfile.pictures.length === 0;
   }
 
   const ytVideoId = extractYouTubeId(activeProfile.youtubeUrl || CONFIG.youtubeUrl);
@@ -450,8 +455,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (CONFIG.recipients) {
       for (const [key, profile] of Object.entries(CONFIG.recipients)) {
         const profileCode = String(profile.passcode || "").trim();
-        console.log(`- So khớp với [${key} - ${profile.recipientName}]: "${profileCode}" vs "${cleanInput}"`);
-        if (profileCode === cleanInput) {
+        const altCode = String(profile.alternatePasscode || "").trim();
+        console.log(`- So khớp với [${key} - ${profile.recipientName}]: chính="${profileCode}" / dự phòng="${altCode}" vs "${cleanInput}"`);
+        if (profileCode === cleanInput || (altCode && altCode === cleanInput)) {
           matchedProfile = profile;
           break;
         }
@@ -627,11 +633,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     card.className = "rain-photo-card";
 
-    // Random vị trí ngang, thời gian rơi và góc nghiêng
-    const leftPos = Math.random() * 88 + 2; // 2% đến 90% chiều rộng
-    const fallDuration = Math.random() * 3.5 + 4.5; // 4.5s đến 8s
-    const rotateDeg = (Math.random() - 0.5) * 40; // -20deg đến +20deg
-    const swayAmount = (Math.random() - 0.5) * 60; // Lắc ngang
+    const leftPos = Math.random() * 88 + 2;
+    const fallDuration = Math.random() * 3.5 + 4.5;
+    const rotateDeg = (Math.random() - 0.5) * 40;
+    const swayAmount = (Math.random() - 0.5) * 60;
 
     card.style.left = `${leftPos}%`;
 
@@ -649,7 +654,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     rainStage.appendChild(card);
 
-    // Chuyển động rơi mượt bằng Web Animations API
     const anim = card.animate([
       { transform: `translate3d(0, -160px, 0) rotate(${rotateDeg}deg)`, opacity: 0 },
       { opacity: 1, offset: 0.1 },
@@ -661,25 +665,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     anim.onfinish = () => {
-      if (card.parentNode) {
-        card.parentNode.removeChild(card);
-      }
+      if (card.parentNode) card.parentNode.removeChild(card);
     };
 
-    // Chạm/bấm vào ảnh phóng to Modal ngay lập tức (hỗ trợ siêu nhạy trên điện thoại và laptop)
     let isOpening = false;
     const triggerLightbox = (e) => {
       if (isOpening) return;
       isOpening = true;
-      if (e) {
-        e.stopPropagation();
-      }
-      try {
-        anim.pause(); // Cố định ảnh ngay tại vị trí chạm, không bị trôi đi
-      } catch (err) { }
+      if (e) e.stopPropagation();
+      try { anim.pause(); } catch (err) { }
 
       openLightbox(randomImgSrc);
-
       setTimeout(() => {
         isOpening = false;
         try {
@@ -692,16 +688,82 @@ document.addEventListener("DOMContentLoaded", () => {
     card.addEventListener("click", triggerLightbox);
   }
 
+  // 🌹 Cơn mưa hoa hồng tươi thắm dành riêng cho Mẹ
+  function spawnRainRose() {
+    if (!isRainingActive) return;
+
+    const flowers = ["🌹", "🌸", "💐", "🌺", "🌷"];
+    const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
+
+    const card = document.createElement("div");
+    card.className = "rain-rose-item";
+
+    const leftPos = Math.random() * 88 + 4;
+    const fallDuration = Math.random() * 3 + 4.5;
+    const rotateDeg = (Math.random() - 0.5) * 45;
+    const swayAmount = (Math.random() - 0.5) * 75;
+
+    card.style.left = `${leftPos}%`;
+
+    const icon = document.createElement("span");
+    icon.className = "rain-rose-icon";
+    icon.textContent = randomFlower;
+    icon.style.fontSize = `${(Math.random() * 1.2 + 2.2).toFixed(2)}rem`;
+
+    card.appendChild(icon);
+    rainStage.appendChild(card);
+
+    const anim = card.animate([
+      { transform: `translate3d(0, -140px, 0) rotate(${rotateDeg}deg) scale(0.85)`, opacity: 0 },
+      { opacity: 1, offset: 0.1 },
+      { opacity: 0.95, offset: 0.85 },
+      { transform: `translate3d(${swayAmount}px, calc(100vh + 150px), 0) rotate(${rotateDeg + 25}deg) scale(1)`, opacity: 0 }
+    ], {
+      duration: fallDuration * 1000,
+      easing: "linear"
+    });
+
+    anim.onfinish = () => {
+      if (card.parentNode) card.parentNode.removeChild(card);
+    };
+
+    // Khi chạm vào hoa hồng -> Nở bừng cánh hoa và âm thanh piano ngân vang
+    const touchRose = (e) => {
+      e.stopPropagation();
+      playGentleChime(659 + Math.random() * 200, 0.3);
+      card.style.transform = "scale(1.5) rotate(15deg)";
+      card.style.opacity = "0";
+      setTimeout(() => {
+        if (card.parentNode) card.parentNode.removeChild(card);
+      }, 250);
+    };
+
+    card.addEventListener("pointerdown", touchRose);
+    card.addEventListener("click", touchRose);
+  }
+
   function startRainingPictures() {
     isRainingActive = true;
     rainStage.innerHTML = "";
-    // Thả ngay vài ảnh đầu tiên
-    for (let i = 0; i < 4; i++) {
-      setTimeout(spawnRainPhoto, i * 400);
+
+    const hintBanner = document.querySelector(".rain-hint-banner");
+    if (hintBanner) {
+      if (isRoseModeActive()) {
+        hintBanner.innerHTML = `<i class="fa-solid fa-spa"></i> Chạm hoặc bấm vào các bông hoa hồng đang bay để cảm nhận tình yêu thương nhé! 🌹`;
+      } else {
+        hintBanner.innerHTML = `<i class="fa-solid fa-hand-pointer"></i> Chạm hoặc bấm vào bất kỳ bức ảnh nào để phóng to xem rõ hơn nhé!`;
+      }
     }
-    // Lặp lại liên tục cơn mưa ảnh
+
+    const spawnFn = isRoseModeActive() ? spawnRainRose : spawnRainPhoto;
+
+    // Thả ngay vài đối tượng đầu tiên
+    for (let i = 0; i < 4; i++) {
+      setTimeout(spawnFn, i * 400);
+    }
+    // Lặp lại liên tục
     if (rainInterval) clearInterval(rainInterval);
-    rainInterval = setInterval(spawnRainPhoto, 900);
+    rainInterval = setInterval(spawnFn, 900);
   }
 
   function stopRainingPictures() {
@@ -757,28 +819,117 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Tính toán tọa độ toán học hình trái tim:
-    // x = 16 * sin^3(t)
-    // y = -(13 * cos(t) - 5 * cos(2t) - 2 * cos(3t) - cos(4t))
-    const pictures = getActivePictures();
-    const count = pictures.length;
-    if (count === 0) return;
+    // Nạp chữ ký riêng của từng người
+    const letterSigP = document.querySelector(".letter-signature p");
+    if (letterSigP && activeProfile && activeProfile.signature) {
+      letterSigP.textContent = activeProfile.signature;
+    }
 
-    // Chiều rộng & chiều cao tương đối của container
     const isMobile = window.innerWidth <= 600;
     const radiusX = isMobile ? 125 : 190;
     const radiusY = isMobile ? 110 : 160;
 
+    const heartSub = document.querySelector(".heart-sub");
+    const heartTitle = document.querySelector(".heart-title");
+    const centerHeartText = document.querySelector(".center-text");
+
+    // 🌹 NẾU LÀ CHẾ ĐỘ HOA HỒNG (hasPictures = false):
+    if (isRoseModeActive()) {
+      if (heartSub) heartSub.textContent = "Gửi trọn yêu thương đến";
+      if (heartTitle) {
+        if (activeProfile && activeProfile.recipientName && activeProfile.recipientName.includes("Mẹ")) {
+          heartTitle.textContent = "Vườn Hoa Hồng Tặng Mẹ 🌹";
+        } else {
+          heartTitle.textContent = `Đóa Hoa Tặng ${activeProfile ? activeProfile.recipientName : ''} 🌹`;
+        }
+      }
+      if (centerHeartText) {
+        if (activeProfile && activeProfile.recipientName && activeProfile.recipientName.includes("Mẹ")) {
+          centerHeartText.textContent = "MẸ YÊU • 20/10";
+        } else {
+          centerHeartText.textContent = `${activeProfile ? activeProfile.recipientName.toUpperCase() : '20 • 10'}`;
+        }
+      }
+
+      const roseCount = 30;
+      const wishes = (activeProfile && activeProfile.roseWishes) || [
+        "Chúc Mẹ luôn mạnh khỏe và bình an mỗi ngày 💐",
+        "Cảm ơn Mẹ vì tất cả sự hy sinh thầm lặng dành cho con 🌹",
+        "Con yêu Mẹ rất nhiều, người phụ nữ tuyệt vời nhất đời con 💖",
+        "Mong Mẹ luôn giữ nụ cười hạnh phúc trên môi 🌸",
+        "Chúc Mẹ luôn an vui, tươi trẻ và ngập tràn niềm vui 🌷"
+      ];
+      const flowerSymbols = ["🌹", "🌸", "💐", "🌺", "🌷"];
+
+      for (let i = 0; i < roseCount; i++) {
+        const t = (i / roseCount) * 2 * Math.PI - Math.PI / 2;
+        const xMath = 16 * Math.pow(Math.sin(t), 3);
+        const yMath = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+        const leftPercent = 50 + (xMath / 16) * (radiusX / (isMobile ? 2.6 : 3.4));
+        const topPercent = 46 + (yMath / 16) * (radiusY / (isMobile ? 2.6 : 3.4));
+
+        const roseItem = document.createElement("button");
+        roseItem.type = "button";
+        roseItem.className = "rose-ring-item";
+        roseItem.style.left = `${leftPercent}%`;
+        roseItem.style.top = `${topPercent}%`;
+        roseItem.style.transform = `translate(-50%, -50%) scale(0)`;
+        roseItem.style.zIndex = 10;
+        roseItem.setAttribute("aria-label", `Đóa hoa hồng ${i + 1}`);
+
+        const flower = flowerSymbols[i % flowerSymbols.length];
+        roseItem.innerHTML = `<span>${flower}</span>`;
+
+        setTimeout(() => {
+          roseItem.style.transition = "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)";
+          roseItem.style.transform = `translate(-50%, -50%) scale(1)`;
+          if (i % 6 === 0) playGentleChime(520 + i * 15, 0.1);
+        }, i * 45);
+
+        // Chạm vào bông hoa hồng sẽ mở lời chúc gửi Mẹ
+        roseItem.addEventListener("click", () => {
+          const wish = wishes[i % wishes.length];
+          playGentleChime(659.25, 0.25);
+
+          lightboxImg.style.display = "none";
+          let wishBox = document.getElementById("rose-lightbox-wish");
+          if (!wishBox) {
+            wishBox = document.createElement("div");
+            wishBox.id = "rose-lightbox-wish";
+            wishBox.style.padding = "35px 20px";
+            wishBox.style.textAlign = "center";
+            wishBox.style.fontSize = "1.5rem";
+            wishBox.style.color = "#fff";
+            wishBox.style.fontFamily = "var(--font-cursive)";
+            wishBox.style.lineHeight = "1.6";
+            document.querySelector(".lightbox-image-frame").appendChild(wishBox);
+          }
+          wishBox.style.display = "block";
+          wishBox.textContent = `"${wish}"`;
+          lightboxModal.classList.add("active");
+        });
+
+        heartContainer.appendChild(roseItem);
+      }
+      return;
+    }
+
+    // 🌸 NẾU LÀ CHẾ ĐỘ CÓ ẢNH (NHƯ BẠN TRANG):
+    if (heartSub) heartSub.textContent = "Dành tặng cho bạn";
+    if (heartTitle) heartTitle.textContent = "Trái Tim Kỷ Niệm 💖";
+    if (centerHeartText) centerHeartText.textContent = "20 • 10";
+
+    const pictures = getActivePictures();
+    const count = pictures.length;
+    if (count === 0) return;
+
     // Sắp xếp các ảnh theo chu vi hình trái tim
     for (let i = 0; i < count; i++) {
-      // Góc t từ 0 đến 2*PI
       const t = (i / count) * 2 * Math.PI - Math.PI / 2;
-
-      // Phương trình hình trái tim
       const xMath = 16 * Math.pow(Math.sin(t), 3);
       const yMath = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
 
-      // Quy đổi sang pixel với tâm ở (50%, 46%)
       const leftPercent = 50 + (xMath / 16) * (radiusX / (isMobile ? 2.6 : 3.4));
       const topPercent = 46 + (yMath / 16) * (radiusY / (isMobile ? 2.6 : 3.4));
 
@@ -801,15 +952,16 @@ document.addEventListener("DOMContentLoaded", () => {
       frame.appendChild(img);
       photoItem.appendChild(frame);
 
-      // Hiệu ứng xuất hiện dần theo nhịp
       photoItem.style.opacity = "0";
       setTimeout(() => {
         photoItem.style.transition = "opacity 0.6s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)";
         photoItem.style.opacity = "1";
       }, i * 70);
 
-      // Bấm vào ảnh trong trái tim cũng phóng to xem
       photoItem.addEventListener("click", () => {
+        const wishBox = document.getElementById("rose-lightbox-wish");
+        if (wishBox) wishBox.style.display = "none";
+        lightboxImg.style.display = "block";
         openLightbox(pictures[i]);
       });
 
@@ -839,6 +991,9 @@ document.addEventListener("DOMContentLoaded", () => {
     lightboxModal.classList.remove("active");
     setTimeout(() => {
       lightboxImg.src = "";
+      const wishBox = document.getElementById("rose-lightbox-wish");
+      if (wishBox) wishBox.style.display = "none";
+      lightboxImg.style.display = "block";
     }, 300);
   }
 

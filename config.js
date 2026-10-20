@@ -1,39 +1,40 @@
 // =========================================================================================
 // 🌸 CẤU HÌNH DÀNH CHO BẠN (DỄ DÀNG CHỈNH SỬA TẤT CẢ TẠI ĐÂY) 🌸
 // 
-// 💡 TÍNH NĂNG ĐA NGƯỜI NHẬN & ĐA THƯ MỤC ẢNH:
-// - Trong thư mục ./Picture/ bạn có thể tạo các thư mục riêng cho từng người:
-//   Ví dụ: ./Picture/Trang/ , ./Picture/Me/ , ./Picture/BanThan/ ...
-// - Mỗi người có MẬT KHẨU RIÊNG (6 số), LỜI CHÚC RIÊNG và DANH SÁCH ẢNH RIÊNG.
-// - Khi người nhận nhập đúng mật mã của họ ở màn hình 1, web sẽ TỰ ĐỘNG nhận diện
-//   và mở đúng thư mục ảnh cùng lời chúc dành riêng cho người đó!
-// - Ngoài ra có thể gửi link trực tiếp kèm tên: index.html?user=Trang hoặc index.html?user=Me
+// 💡 HỆ THỐNG 3 PHẦN RIÊNG BIỆT (TRANG / MẸ / CHỊ HOẶC BẠN):
+// - Mỗi người có MẬT KHẨU RIÊNG (6 số), LỜI CHÚC RIÊNG, TÂM THƯ RIÊNG và PHẦN ẢNH RIÊNG.
+// - Thuộc tính `hasPictures`:
+//     + true:  Dành cho người CÓ ẢNH (Web sẽ rơi ảnh và xếp các ảnh thành hình trái tim kỷ niệm).
+//     + false: Dành cho người KHÔNG CÓ ẢNH (Web sẽ chạy mưa hoa hồng và xếp thành đóa hoa hồng tình yêu).
+// - Khi người nhận nhập mật khẩu ở màn hình 1, web sẽ TỰ ĐỘNG CHUYỂN ĐỔI sang kịch bản
+//   dành riêng cho người đó theo đúng mật mã đã nhập!
 // =========================================================================================
 
 const CONFIG = {
-  // Mật khẩu dự phòng
-  passcode: "201026",
-
   // Người nhận mặc định ("auto" = tự động nhận diện theo mật khẩu 6 số nhập vào)
   defaultRecipient: "auto",
 
   // Link nhạc YouTube mặc định (nếu từng người không cài nhạc riêng)
   youtubeUrl: "https://www.youtube.com/watch?v=GczyPW3vbrc&list=RDGczyPW3vbrc&start_radio=1",
 
-  // Câu hỏi món quà bí mật (ở màn hình mưa ảnh)
+  // Câu hỏi món quà bí mật (ở màn hình mưa quà)
   secretQuestion: "Có 1 món quà bí mật có muốn nhận không? 🎁",
   btnYesText: "Có! Nhận ngay ✨",
   btnNoText: "Không 🙈",
 
   // =======================================================================================
-  // 👥 DANH SÁCH CÁC NGƯỜI NHẬN VÀ THƯ MỤC ẢNH RIÊNG BIỆT
+  // 👥 3 PHẦN ĐƯỢC CHIA TÁCH BIỆT: TRANG • MẸ • CHỊ HOẶC BẠN
   // =======================================================================================
   recipients: {
 
-    // 🌸 1. NGƯỜI NHẬN: TRANG (Thư mục ảnh: ./Picture/Trang/)
+    // =====================================================================================
+    // 🌸 PHẦN 1: BẠN TRANG (CÓ ẢNH: hasPictures = true)
+    // =====================================================================================
     "Trang": {
-      passcode: "051104", // Mật khẩu 6 số để mở khóa dành riêng cho Trang
+      passcode: "041105",             // Mật khẩu mở quà của Trang
+      alternatePasscode: "051104",    // Mật khẩu dự phòng của Trang
       recipientName: "Trang",
+      hasPictures: true,              // 👉 TRUE: Hiển thị mưa ảnh và xếp ảnh thành trái tim
       youtubeUrl: "https://www.youtube.com/watch?v=GczyPW3vbrc&list=RDGczyPW3vbrc&start_radio=1",
       roseGreeting: {
         badge: "Happy Vietnamese Women's Day • 20/10",
@@ -49,7 +50,8 @@ const CONFIG = {
         "🎁 Món quà lớn nhất hôm nay và mãi mãi về sau chính là nụ cười hạnh phúc của bạn!",
         "Luôn hạnh phúc nhé thanh xuân của tôi"
       ],
-      // Danh sách ảnh của Trang (trong folder ./Picture/Trang/)
+      signature: "From: With all my love & respect 🌹",
+      // Thư mục ảnh riêng của Trang: ./Picture/Trang/
       pictures: [
         "./Picture/Trang/1792472648177_183047390399561637_1493747914768374165_0957a466da836c953c9dc6042632ee64.jpg",
         "./Picture/Trang/1792472648204_183047390399561637_1493747914768374165_3891e0b3ed6b1ca2d1e7d93f9dc66b5b.jpg",
@@ -58,7 +60,7 @@ const CONFIG = {
         "./Picture/Trang/1792472648320_183047390399561637_1493747914768374165_b9c3f7ee4346eb06bb82d3c9e79b293a.jpg",
         "./Picture/Trang/1792472648347_183047390399561637_1493747914768374165_36193a8db58b286b4bf6ec27190c683a.jpg",
         "./Picture/Trang/1792472648375_183047390399561637_1493747914768374165_d02817e3ac5e95110f92c587a564c7c7.jpg",
-        "./Picture/Trang/1792472648400_183047390399561637_1493747914768374165_27f60d37f8f1215eab70bf3cdebc981a.jpg",
+        "./Picture/Trang/17924748400_183047390399561637_1493747914768374165_27f60d37f8f1215eab70bf3cdebc981a.jpg",
         "./Picture/Trang/1792472648430_183047390399561637_1493747914768374165_c5e8c6ba12d1da56058f732b1373daa9.jpg",
         "./Picture/Trang/1792472648456_183047390399561637_1493747914768374165_c5a04b6e52f106fdcc327b8ee51005d0.jpg",
         "./Picture/Trang/1792472648482_183047390399561637_1493747914768374165_2feb52cc9446fbada6593b1d241847d3.jpg",
@@ -75,10 +77,13 @@ const CONFIG = {
       ]
     },
 
-    // 🌸 2. NGƯỜI NHẬN: MẸ YÊU (Thư mục ảnh: ./Picture/Me/)
+    // =====================================================================================
+    // 💐 PHẦN 2: MẸ YÊU (KHÔNG DÙNG ẢNH: hasPictures = false)
+    // =====================================================================================
     "Me": {
-      passcode: "201026", // Mật khẩu ví dụ cho Mẹ
+      passcode: "201026",             // Mật khẩu mở quà của Mẹ
       recipientName: "Mẹ Yêu",
+      hasPictures: false,             // 👉 FALSE: Hiển thị mưa hoa hồng và vườn hoa hồng tình yêu
       youtubeUrl: "https://www.youtube.com/watch?v=GczyPW3vbrc&list=RDGczyPW3vbrc&start_radio=1",
       roseGreeting: {
         badge: "Happy Vietnamese Women's Day • 20/10",
@@ -87,36 +92,54 @@ const CONFIG = {
         giftPromptPrefix: "Có 1 món quà đặc biệt dành tặng cho mẹ",
         giftPromptSuffix: ""
       },
+      // Các lời chúc ấm áp khi chạm vào từng bông hoa hồng
+      roseWishes: [
+        "Chúc Mẹ luôn mạnh khỏe và bình an mỗi ngày 💐",
+        "Cảm ơn Mẹ vì tất cả sự hy sinh thầm lặng dành cho con 🌹",
+        "Con yêu Mẹ rất nhiều, người phụ nữ tuyệt vời nhất đời con 💖",
+        "Mong Mẹ luôn giữ nụ cười hạnh phúc trên môi 🌸",
+        "Chúc Mẹ luôn an vui, tươi trẻ và ngập tràn niềm vui 🌷",
+        "Mẹ luôn là điểm tựa bình yên và vững chắc nhất của con 🌺",
+        "Cảm ơn tình yêu thương vô bờ bến của Mẹ dành cho gia đình 💕"
+      ],
       finalLetter: [
         "💐 Con chúc Mẹ một ngày 20/10 thật nhiều niềm vui và ấm áp.",
         "💖 Cảm ơn Mẹ đã luôn là điểm tựa bình yên và vững chãi nhất của cuộc đời con.",
         "🌸 Chúc Mẹ luôn mạnh khỏe, nở nụ cười tươi mỗi ngày!",
         "Mẹ là người phụ nữ tuyệt vời nhất trong lòng con."
       ],
-      // Bạn chỉ cần bỏ ảnh của Mẹ vào thư mục ./Picture/Me/ rồi điền tên file ở đây:
-      pictures: [
-        // Ví dụ: "./Picture/Me/anh1.jpg", "./Picture/Me/anh2.jpg"
-      ]
+      signature: "From: Con của Mẹ 💖",
+      pictures: [] // Không dùng ảnh
     },
 
-    // 🌸 3. NGƯỜI NHẬN: BẠN THÂN (Thư mục ảnh: ./Picture/BanThan/)
-    "BanThan": {
-      passcode: "201000", // Mật khẩu ví dụ
-      recipientName: "Bạn Thân",
+    // =====================================================================================
+    // 🌷 PHẦN 3: BẠN HOẶC CHỊ (Tùy chọn: hasPictures = false hoặc true)
+    // =====================================================================================
+    "Chi": {
+      passcode: "120426",             // Mật khẩu mở quà cho Chị hoặc Bạn
+      recipientName: "Chị Gái",
+      hasPictures: false,             // 👉 Đổi thành true nếu bạn thêm ảnh vào ./Picture/Chi/
       youtubeUrl: "https://www.youtube.com/watch?v=GczyPW3vbrc&list=RDGczyPW3vbrc&start_radio=1",
       roseGreeting: {
         badge: "Happy Vietnamese Women's Day • 20/10",
-        title: "Chúc Mừng 20/10 Bạn Thân 🌷",
-        content: "Chúc bạn có một ngày 20/10 ngập tràn niềm vui, xinh đẹp rạng ngời và luôn thành công trong mọi dự định!",
+        title: "Chúc Mừng Ngày 20/10 🌷",
+        content: "Chúc chị có một ngày 20/10 ngập tràn niềm vui, xinh đẹp rạng ngời và luôn thành công trong mọi dự định tương lai!",
         giftPromptPrefix: "Có 1 món quà đặc biệt gửi đến ",
         giftPromptSuffix: ""
       },
-      finalLetter: [
-        "🌷 Chúc bạn luôn tự tin, rạng rỡ và đạt được mọi điều mình mơ ước.",
-        "✨ Cảm ơn vì chúng mình luôn đồng hành và chia sẻ cùng nhau!",
-        "Mãi vui vẻ và hạnh phúc nhé!"
+      roseWishes: [
+        "Luôn luôn tươi trẻ và rạng ngời như hoa mùa xuân 🌷",
+        "Gặp nhiều may mắn và thành công trong công việc 🍀",
+        "Mỗi ngày trôi qua đều là một ngày hạnh phúc 🌸",
+        "Mãi giữ nụ cười đáng yêu và năng lượng tích cực ✨"
       ],
-      // Thư mục ./Picture/BanThan/
+      finalLetter: [
+        "🌷 Chúc chị luôn tự tin, rạng rỡ và đạt được mọi điều mình mơ ước.",
+        "✨ Cảm ơn vì chúng mình luôn đồng hành và chia sẻ những khoảnh khắc đẹp cùng nhau!",
+        "Mãi vui vẻ, hạnh phúc và thành công nhé!"
+      ],
+      signature: "From: Chúc một ngày 20/10 trọn vẹn niềm vui 🌸",
+      // Thư mục ảnh riêng (nếu hasPictures = true): ./Picture/Chi/
       pictures: []
     }
 
