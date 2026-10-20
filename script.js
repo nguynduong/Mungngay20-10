@@ -79,16 +79,18 @@ document.addEventListener("DOMContentLoaded", () => {
           onReady: function (event) {
             isYTReady = true;
             if (isMusicPlaying) {
-              try { event.target.playVideo(); } catch (e) { }
+              try {
+                event.target.unMute();
+                event.target.playVideo();
+                stopChimeLoop();
+              } catch (e) { }
             }
           },
           onStateChange: function (event) {
             if (event.data === YT.PlayerState.PLAYING) {
               isMusicPlaying = true;
               musicToggle.classList.add("playing");
-            } else if (event.data === YT.PlayerState.PAUSED) {
-              isMusicPlaying = false;
-              musicToggle.classList.remove("playing");
+              stopChimeLoop();
             } else if (event.data === YT.PlayerState.ENDED) {
               event.target.playVideo(); // Lặp lại bài hát
             }
@@ -178,12 +180,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (ytPlayer && isYTReady && typeof ytPlayer.playVideo === "function") {
       try {
+        ytPlayer.unMute();
         ytPlayer.playVideo();
       } catch (e) {
         startChimeLoop();
       }
+
+      // Dự phòng an toàn: nếu sau 1.2s YouTube vẫn chưa phát do bị trình duyệt chặn autoplay, tự động phát piano chime
+      setTimeout(() => {
+        if (isMusicPlaying && ytPlayer) {
+          const state = typeof ytPlayer.getPlayerState === "function" ? ytPlayer.getPlayerState() : -1;
+          if (state !== 1 && state !== 3) {
+            console.log("YouTube chưa phát được, chuyển sang giai điệu piano dự phòng");
+            startChimeLoop();
+          }
+        }
+      }, 1200);
     } else if (ytVideoId && !isYTReady) {
-      // Đang chờ YouTube API load xong, tạm thời chạy chime hoặc chờ
+      // Đang chờ YouTube API load xong, tạm thời chạy chime
       startChimeLoop();
     } else {
       startChimeLoop();
@@ -211,6 +225,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   musicToggle.addEventListener("click", toggleMusic);
+
+  // Mở khóa âm thanh của trình duyệt ngay lần đầu tiên người dùng tương tác
+  const primeAudio = () => {
+    initAudio();
+    if (ytPlayer && isYTReady && typeof ytPlayer.unMute === "function") {
+      try { ytPlayer.unMute(); } catch (e) { }
+    }
+    window.removeEventListener("click", primeAudio);
+    window.removeEventListener("keydown", primeAudio);
+    window.removeEventListener("touchstart", primeAudio);
+  };
+  window.addEventListener("click", primeAudio, { once: true });
+  window.addEventListener("keydown", primeAudio, { once: true });
+  window.addEventListener("touchstart", primeAudio, { once: true });
 
 
   // =========================================================================
@@ -368,6 +396,9 @@ document.addEventListener("DOMContentLoaded", () => {
       playGentleChime(659.25, 0.4);
       setTimeout(() => playGentleChime(783.99, 0.5), 150);
 
+      // 🎵 PHÁT NHẠC NGAY KHI VỪA XÁC NHẬN MẬT KHẨU (Tận dụng gesture tương tác của người dùng)
+      playMusic();
+
       setTimeout(() => {
         switchScene(sceneRoses);
       }, 700);
@@ -443,12 +474,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (badgeEl && CONFIG.roseGreeting.badge) badgeEl.textContent = CONFIG.roseGreeting.badge;
       if (titleEl && CONFIG.roseGreeting.title) titleEl.textContent = CONFIG.roseGreeting.title;
       if (contentEl && CONFIG.roseGreeting.content) contentEl.textContent = CONFIG.roseGreeting.content;
-      if (promptPrefixEl && CONFIG.roseGreeting.giftPromptPrefix) promptPrefixEl.textContent = CONFIG.roseGreeting.giftPromptPrefix;
-      if (promptSuffixEl && CONFIG.roseGreeting.giftPromptSuffix) promptSuffixEl.textContent = CONFIG.roseGreeting.giftPromptSuffix;
+      if (promptPrefixEl && typeof CONFIG.roseGreeting.giftPromptPrefix === "string") {
+        promptPrefixEl.textContent = CONFIG.roseGreeting.giftPromptPrefix;
+      }
+      if (promptSuffixEl && typeof CONFIG.roseGreeting.giftPromptSuffix === "string") {
+        promptSuffixEl.textContent = CONFIG.roseGreeting.giftPromptSuffix;
+      }
     }
 
     if (recipientNameEl && CONFIG.recipientName) {
-      recipientNameEl.textContent = ` ${CONFIG.recipientName} `;
+      recipientNameEl.textContent = CONFIG.recipientName;
     }
 
     // Tạo cánh hoa hồng rơi

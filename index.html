@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -35,9 +35,9 @@
     </span>
   </button>
 
-  <!-- Hidden YouTube Player Container -->
+  <!-- YouTube Player Container (giữ trong viewport với kích thước hợp lệ để tránh bị trình duyệt chặn autoplay) -->
   <div id="yt-player-container"
-    style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none;">
+    style="position: fixed; bottom: 0; right: 0; width: 200px; height: 200px; opacity: 0.001; pointer-events: none; z-index: -999;">
     <div id="yt-player"></div>
   </div>
 
@@ -308,8 +308,8 @@
   </div>
 
   <!-- Scripts -->
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script src="config.js?v=2"></script>
+  <script src="script.js?v=2"></script>
 </body>
 
 </html>
