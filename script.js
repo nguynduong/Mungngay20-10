@@ -64,11 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.onYouTubeIframeAPIReady = function () {
       ytPlayer = new YT.Player("yt-player", {
-        height: "100",
-        width: "100",
+        height: "200",
+        width: "200",
         videoId: ytVideoId,
         playerVars: {
-          autoplay: 0,
+          autoplay: 1,
           controls: 0,
           loop: 1,
           playlist: ytVideoId,
@@ -78,12 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
         events: {
           onReady: function (event) {
             isYTReady = true;
+            try {
+              event.target.unMute();
+              event.target.playVideo();
+            } catch (e) { }
             if (isMusicPlaying) {
-              try {
-                event.target.unMute();
-                event.target.playVideo();
-                stopChimeLoop();
-              } catch (e) { }
+              stopChimeLoop();
             }
           },
           onStateChange: function (event) {
@@ -226,19 +226,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   musicToggle.addEventListener("click", toggleMusic);
 
-  // Mở khóa âm thanh của trình duyệt ngay lần đầu tiên người dùng tương tác
-  const primeAudio = () => {
+  // Cố gắng phát nhạc ngay lập tức khi vừa truy cập trang web
+  playMusic();
+
+  // Bật nhạc ngay ở cú chạm/gõ phím đầu tiên (đối với các trình duyệt chặn autoplay khi chưa có tương tác)
+  const autoStartMusicOnInteraction = () => {
     initAudio();
-    if (ytPlayer && isYTReady && typeof ytPlayer.unMute === "function") {
-      try { ytPlayer.unMute(); } catch (e) { }
+    if (!isMusicPlaying || (ytPlayer && ytPlayer.getPlayerState && ytPlayer.getPlayerState() !== 1)) {
+      playMusic();
     }
-    window.removeEventListener("click", primeAudio);
-    window.removeEventListener("keydown", primeAudio);
-    window.removeEventListener("touchstart", primeAudio);
+    window.removeEventListener("pointerdown", autoStartMusicOnInteraction);
+    window.removeEventListener("touchstart", autoStartMusicOnInteraction);
+    window.removeEventListener("click", autoStartMusicOnInteraction);
+    window.removeEventListener("keydown", autoStartMusicOnInteraction);
   };
-  window.addEventListener("click", primeAudio, { once: true });
-  window.addEventListener("keydown", primeAudio, { once: true });
-  window.addEventListener("touchstart", primeAudio, { once: true });
+  window.addEventListener("pointerdown", autoStartMusicOnInteraction, { passive: true });
+  window.addEventListener("touchstart", autoStartMusicOnInteraction, { passive: true });
+  window.addEventListener("click", autoStartMusicOnInteraction);
+  window.addEventListener("keydown", autoStartMusicOnInteraction);
 
 
   // =========================================================================
@@ -364,8 +369,11 @@ document.addEventListener("DOMContentLoaded", () => {
     currentPasscode += digit;
     updatePinBoxes();
 
-    // Phát âm thanh gõ nhẹ
+    // Phát âm thanh gõ nhẹ và bắt đầu phát nhạc nếu trước đó bị browser chặn autoplay
     initAudio();
+    if (!isMusicPlaying) {
+      playMusic();
+    }
     playGentleChime(400 + currentPasscode.length * 60, 0.15);
 
     // Kiểm tra khi đủ 6 chữ số
@@ -560,12 +568,6 @@ document.addEventListener("DOMContentLoaded", () => {
     inner.appendChild(img);
     card.appendChild(inner);
 
-    // Click vào ảnh phóng to Modal
-    card.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openLightbox(randomImgSrc);
-    });
-
     rainStage.appendChild(card);
 
     // Chuyển động rơi mượt bằng Web Animations API
@@ -584,6 +586,31 @@ document.addEventListener("DOMContentLoaded", () => {
         card.parentNode.removeChild(card);
       }
     };
+
+    // Chạm/bấm vào ảnh phóng to Modal ngay lập tức (hỗ trợ siêu nhạy trên điện thoại và laptop)
+    let isOpening = false;
+    const triggerLightbox = (e) => {
+      if (isOpening) return;
+      isOpening = true;
+      if (e) {
+        e.stopPropagation();
+      }
+      try {
+        anim.pause(); // Cố định ảnh ngay tại vị trí chạm, không bị trôi đi
+      } catch (err) { }
+
+      openLightbox(randomImgSrc);
+
+      setTimeout(() => {
+        isOpening = false;
+        try {
+          if (anim.playState === "paused") anim.play();
+        } catch (err) { }
+      }, 600);
+    };
+
+    card.addEventListener("pointerdown", triggerLightbox);
+    card.addEventListener("click", triggerLightbox);
   }
 
   function startRainingPictures() {

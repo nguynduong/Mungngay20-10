@@ -685,8 +685,12 @@ html, body {
   top: -160px;
   cursor: pointer;
   z-index: 2;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
   will-change: transform;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  padding: 12px;
+  margin: -12px;
 }
 
 .rain-photo-inner {
@@ -699,6 +703,8 @@ html, body {
   align-items: center;
   width: 90px;
   border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  pointer-events: auto;
 }
 
 .rain-photo-img {
@@ -709,14 +715,12 @@ html, body {
   pointer-events: none;
 }
 
-.rain-photo-card:hover {
-  transform: scale(1.15) !important;
-  z-index: 50;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.7), 0 0 20px var(--color-gold-glow);
-}
-
-.rain-photo-card:hover .rain-photo-inner {
+/* Áp dụng hover/active vào .rain-photo-inner (thay vì .rain-photo-card) để KHÔNG ghi đè transform translate3d rơi của card */
+.rain-photo-card:hover .rain-photo-inner,
+.rain-photo-card:active .rain-photo-inner {
+  transform: scale(1.12);
   border-color: var(--color-gold);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.7), 0 0 20px var(--color-gold-glow);
 }
 
 /* Rain Hint Banner */
@@ -1188,8 +1192,8 @@ html, body {
   }
 
   .rain-photo-inner {
-    width: 72px;
-    padding: 4px 4px 12px 4px;
+    width: 82px;
+    padding: 5px 5px 14px 5px;
   }
 
   .secret-question-box {
