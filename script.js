@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const firstScript = document.getElementsByTagName("script")[0];
     firstScript.parentNode.insertBefore(ytScript, firstScript);
 
-    window.onYouTubeIframeAPIReady = function() {
+    window.onYouTubeIframeAPIReady = function () {
       ytPlayer = new YT.Player("yt-player", {
         height: "100",
         width: "100",
@@ -76,13 +76,13 @@ document.addEventListener("DOMContentLoaded", () => {
           modestbranding: 1
         },
         events: {
-          onReady: function(event) {
+          onReady: function (event) {
             isYTReady = true;
             if (isMusicPlaying) {
-              try { event.target.playVideo(); } catch (e) {}
+              try { event.target.playVideo(); } catch (e) { }
             }
           },
-          onStateChange: function(event) {
+          onStateChange: function (event) {
             if (event.data === YT.PlayerState.PLAYING) {
               isMusicPlaying = true;
               musicToggle.classList.add("playing");
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
               event.target.playVideo(); // Lặp lại bài hát
             }
           },
-          onError: function(err) {
+          onError: function (err) {
             console.warn("YouTube player gặp lỗi, tự động chuyển sang giai điệu piano:", err);
             ytPlayer = null;
             if (isMusicPlaying) {
@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (ytPlayer && isYTReady && typeof ytPlayer.pauseVideo === "function") {
       try {
         ytPlayer.pauseVideo();
-      } catch (e) {}
+      } catch (e) { }
     }
     stopChimeLoop();
   }
@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
     scenes.forEach(s => {
       s.classList.remove("active");
     });
-    
+
     setTimeout(() => {
       targetScene.classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -582,7 +582,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     noClickCount++;
     btnNoText.textContent = funnyTexts[noClickCount % funnyTexts.length];
-    
+
     // Rung lắc nhẹ
     btnGiftNo.style.transform = `scale(0.9) translate(${(Math.random() - 0.5) * 30}px, ${(Math.random() - 0.5) * 20}px)`;
     setTimeout(() => {
