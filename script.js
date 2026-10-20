@@ -409,6 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (currentPasscode.length >= PASSCODE_LENGTH) return;
     passcodeError.textContent = "";
     currentPasscode += digit;
+    if (hiddenPinInput) hiddenPinInput.value = currentPasscode;
     updatePinBoxes();
 
     // Phát âm thanh gõ nhẹ và bắt đầu phát nhạc nếu trước đó bị browser chặn autoplay
@@ -427,6 +428,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function handleBackspace() {
     if (currentPasscode.length > 0) {
       currentPasscode = currentPasscode.slice(0, -1);
+      if (hiddenPinInput) hiddenPinInput.value = currentPasscode;
       passcodeError.textContent = "";
       updatePinBoxes();
     }
@@ -434,28 +436,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleClear() {
     currentPasscode = "";
+    if (hiddenPinInput) hiddenPinInput.value = "";
     passcodeError.textContent = "";
     updatePinBoxes();
   }
 
   function verifyPasscode() {
+    const cleanInput = String(currentPasscode).trim();
     let matchedProfile = null;
+
+    console.log("👉 Đang xác thực mật mã nhập vào:", cleanInput);
 
     if (CONFIG.recipients) {
       for (const [key, profile] of Object.entries(CONFIG.recipients)) {
-        if (profile.passcode === currentPasscode) {
+        const profileCode = String(profile.passcode || "").trim();
+        console.log(`- So khớp với [${key} - ${profile.recipientName}]: "${profileCode}" vs "${cleanInput}"`);
+        if (profileCode === cleanInput) {
           matchedProfile = profile;
           break;
         }
       }
     }
 
-    if (!matchedProfile && CONFIG.passcode && currentPasscode === CONFIG.passcode) {
-      matchedProfile = activeProfile;
+    if (!matchedProfile && CONFIG.passcode && String(CONFIG.passcode).trim() === cleanInput) {
+      matchedProfile = (CONFIG.recipients && CONFIG.recipients["Me"]) || activeProfile;
     }
 
     if (matchedProfile) {
       activeProfile = matchedProfile;
+      console.log("✅ Đã nhận diện thành công người nhận:", activeProfile.recipientName);
       passcodeError.style.color = "#52b788";
       passcodeError.textContent = `Mật khẩu chính xác! Đang mở quà cho ${activeProfile.recipientName || ''}... 🌹`;
       playGentleChime(659.25, 0.4);

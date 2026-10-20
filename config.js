@@ -11,6 +11,9 @@
 // =========================================================================================
 
 const CONFIG = {
+  // Mật khẩu dự phòng
+  passcode: "201026",
+
   // Người nhận mặc định ("auto" = tự động nhận diện theo mật khẩu 6 số nhập vào)
   defaultRecipient: "auto",
 
