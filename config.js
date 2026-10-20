@@ -81,7 +81,7 @@ const CONFIG = {
     // 💐 PHẦN 2: MẸ YÊU (KHÔNG DÙNG ẢNH: hasPictures = false)
     // =====================================================================================
     "Me": {
-      passcode: "201026",             // Mật khẩu mở quà của Mẹ
+      passcode: "160526",             // Mật khẩu mở quà của Mẹ
       recipientName: "Mẹ Yêu",
       hasPictures: false,             // 👉 FALSE: Hiển thị mưa hoa hồng và vườn hoa hồng tình yêu
       youtubeUrl: "https://www.youtube.com/watch?v=GczyPW3vbrc&list=RDGczyPW3vbrc&start_radio=1",
