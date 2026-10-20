@@ -25,7 +25,7 @@ const CONFIG = {
     badge: "Happy Vietnamese Women's Day • 20/10",
     title: "Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10 🌹",
     content: "Chúc người tuyệt vời nhất luôn luôn rạng ngời như những đóa hoa hồng, ngập tràn niềm vui, bình an và hạnh phúc. Cảm ơn vì đã luôn mang đến những điều ngọt ngào và ấm áp nhất!",
-    giftPromptPrefix: "Có 1 món quà đặc biệt tặng người", // Phần trước tên người
+    giftPromptPrefix: "Có 1 món quà đặc biệt tặng ", // Phần trước tên người
     giftPromptSuffix: "..."                            // Phần sau tên người
   },
 
@@ -36,7 +36,7 @@ const CONFIG = {
     "🌸 Mong rằng bạn luôn giữ nụ cười rạng rỡ trên môi, dù là hôm nay hay bất kỳ ngày nào khác.",
     "💖 Cảm ơn vì đã xuất hiện và làm cho thế giới này trở nên dịu dàng và đẹp đẽ hơn rất nhiều.",
     "🎁 Món quà lớn nhất hôm nay và mãi mãi về sau chính là nụ cười hạnh phúc của bạn!",
-    "Chúc bạn luôn được hạnh phúc"
+    "Luôn hạnh phúc nhé thanh xuân của tôi"
   ],
 
   // 5. CÂU HỎI MÓN QUÀ BÍ MẬT (Ở màn hình mưa ảnh)
