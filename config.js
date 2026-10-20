@@ -74,14 +74,14 @@ const CONFIG = {
 
     // 🌸 2. NGƯỜI NHẬN: MẸ YÊU (Thư mục ảnh: ./Picture/Me/)
     "Me": {
-      passcode: "201024", // Mật khẩu ví dụ cho Mẹ
+      passcode: "201026", // Mật khẩu ví dụ cho Mẹ
       recipientName: "Mẹ Yêu",
       youtubeUrl: "https://www.youtube.com/watch?v=GczyPW3vbrc&list=RDGczyPW3vbrc&start_radio=1",
       roseGreeting: {
         badge: "Happy Vietnamese Women's Day • 20/10",
         title: "Chúc Mừng Ngày 20/10 Mẹ Yêu 💐",
         content: "Chúc Mẹ luôn luôn mạnh khỏe, bình an, nhiều niềm vui và hạnh phúc mỗi ngày. Cảm ơn Mẹ vì tất cả sự hy sinh và tình yêu thương vô bờ bến!",
-        giftPromptPrefix: "Có 1 món quà đặc biệt dành tặng cho ",
+        giftPromptPrefix: "Có 1 món quà đặc biệt dành tặng cho mẹ",
         giftPromptSuffix: ""
       },
       finalLetter: [
